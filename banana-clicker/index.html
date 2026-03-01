@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍌 Banana Clicker - Monko's Path to Zillions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>🍌 BANANA CLICKER</h1>
+            <p class="subtitle">Click your way to ZILLIONS!</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="banana-section">
+                <div class="banana-display">
+                    <h2>🍌 <span id="bananaCount">0</span></h2>
+                    <p class="per-second">Per second: <span id="perSecond">0</span> 🍌/s</p>
+                </div>
+                
+                <button id="clickBanana" class="click-btn">
+                    <span class="banana-emoji">🍌</span>
+                    <span class="click-text">CLICK ME!</span>
+                </button>
+                
+                <div class="stats">
+                    <p>Total Clicks: <span id="totalClicks">0</span></p>
+                    <p>Click Power: <span id="clickPower">1</span> 🍌</p>
+                </div>
+            </div>
+            
+            <div class="upgrades-section">
+                <h2>🏪 BANANA EMPIRE</h2>
+                <p class="upgrades-desc">Build your empire and automate banana production!</p>
+                
+                <div class="upgrades-list" id="upgradesList">
+                    <!-- Upgrades will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <button id="resetBtn" class="reset-btn">🔄 RESET GAME</button>
+            <p class="footer-text">From exile to zillions 🚀</p>
+        </footer>
+    </div>
+    
+    <div class="floating-bananas" id="floatingBananas"></div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

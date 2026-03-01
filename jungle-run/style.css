@@ -1,0 +1,115 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial Black', Arial, sans-serif;
+    background: linear-gradient(135deg, #1a5f1a 0%, #0d3f0d 100%);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.game-container {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 2.5em;
+    color: #ffeb3b;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+    margin-bottom: 10px;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.stats span {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 15px;
+    border-radius: 10px;
+}
+
+#gameCanvas {
+    border: 5px solid #ffeb3b;
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #87ceeb 0%, #e0f6ff 50%, #8b7355 50%, #654321 100%);
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+}
+
+.controls {
+    margin-top: 15px;
+}
+
+.controls p {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+button {
+    background: linear-gradient(135deg, #ffeb3b, #ffc107);
+    color: #000;
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 1.3em;
+    padding: 12px 35px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    border: 5px solid #ff4444;
+    z-index: 10;
+}
+
+.game-over h2 {
+    font-size: 2.5em;
+    color: #ff4444;
+    margin-bottom: 20px;
+}
+
+.game-over p {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.hidden {
+    display: none;
+}
