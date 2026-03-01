@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONKO Banana Farm 🦞🍌</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5016 50%, #1a472a 100%);
+            color: #fff;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #ff6b35;
+            z-index: 100;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+        }
+
+        .stat-value {
+            color: #ffd700;
+        }
+
+        #farm-area {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            height: calc(100vh - 180px);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .plot {
+            background: rgba(139, 69, 19, 0.6);
+            border: 3px solid #8b4513;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .plot:hover {
+            transform: scale(1.05);
+            border-color: #ff6b35;
+        }
+
+        .plot.empty {
+            background: rgba(101, 67, 33, 0.6);
+        }
+
+        .tree {
+            font-size: 60px;
+            animation: sway 2s ease-in-out infinite;
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        .tree-stage-0 { font-size: 20px; } /* seed */
+        .tree-stage-1 { font-size: 35px; } /* sprout */
+        .tree-stage-2 { font-size: 50px; } /* growing */
+        .tree-stage-3 { font-size: 60px; } /* mature */
+
+        .plot-status {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 3px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+
+        .action-buttons {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .action-btn {
+            background: rgba(255, 107, 53, 0.9);
+            border: 2px solid #fff;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 107, 53, 1);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 3px solid #ff6b35;
+            z-index: 100;
+        }
+
+        .shop-btn {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .shop-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.5);
+        }
+
+        .monkey-attack {
+            position: absolute;
+            font-size: 40px;
+            animation: attack 3s linear;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        @keyframes attack {
+            0% { right: -50px; top: 50%; }
+            100% { right: 100%; top: 50%; }
+        }
+
+        .notification {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 200;
+            animation: fadeInOut 2s;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+
+        .health-bar {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 8px;
+            background: rgba(255, 0, 0, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000 0%, #ff6b35 50%, #ffd700 100%);
+            transition: width 0.3s;
+        }
+
+        .banana-collect {
+            position: absolute;
+            font-size: 30px;
+            animation: collect 1s ease-out;
+            pointer-events: none;
+            z-index: 60;
+        }
+
+        @keyframes collect {
+            0% { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+            100% { 
+                opacity: 0; 
+                transform: translateY(-100px) scale(2);
+            }
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2d5016 0%, #1a472a 100%);
+            border: 5px solid #ffd700;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 32px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .upgrade-item {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff6b35;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upgrade-info {
+            flex: 1;
+        }
+
+        .upgrade-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .upgrade-desc {
+            font-size: 14px;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        .upgrade-cost {
+            font-size: 18px;
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        .buy-btn {
+            background: #ff6b35;
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 10px 20px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            transform: scale(1.1);
+            background: #f7931e;
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .close-modal {
+            background: #666;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            padding: 10px 30px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Header -->
+        <div id="header">
+            <div class="title">🦞 MONKO BANANA FARM 🍌</div>
+            <div style="display: flex; gap: 30px;">
+                <div class="stat">
+                    <span class="stat-icon">🍌</span>
+                    <span class="stat-value" id="bananas">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">🦞</span>
+                    <span class="stat-value" id="monko-tokens">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">💧</span>
+                    <span class="stat-value" id="water">100</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">🌱</span>
+                    <span class="stat-value" id="fertilizer">10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farm Area -->
+        <div id="farm-area"></div>
+
+        <!-- Bottom Bar -->
+        <div id="bottom-bar">
+            <button class="shop-btn" onclick="game.openShop()">🏪 SHOP</button>
+            <button class="shop-btn" onclick="game.collectAll()">🍌 COLLECT ALL</button>
+            <button class="shop-btn" onclick="game.waterAll()">💧 WATER ALL</button>
+            <button class="shop-btn" onclick="game.claimMonko()">🦞 CLAIM $MONKO</button>
+        </div>
+
+        <!-- Modal -->
+        <div id="modal">
+            <div class="modal-content">
+                <div class="modal-title">🏪 MONKO SHOP 🏪</div>
+                <div id="shop-items"></div>
+                <button class="close-modal" onclick="game.closeShop()">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

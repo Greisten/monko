@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONKO JUNGLE SIMULATOR 🦞🌴</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: #87ceeb;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #game-canvas {
+            display: block;
+            background: linear-gradient(180deg, #87ceeb 0%, #98d8e8 50%, #7ab55c 100%);
+            cursor: pointer;
+        }
+
+        #hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 20px;
+            color: #fff;
+            z-index: 100;
+        }
+
+        .stat-bar {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            min-width: 80px;
+        }
+
+        .bar-container {
+            width: 150px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 8px;
+        }
+
+        .hunger-bar { background: linear-gradient(90deg, #ff6b35, #ffd700); }
+        .energy-bar { background: linear-gradient(90deg, #4ade80, #22c55e); }
+        .happiness-bar { background: linear-gradient(90deg, #f472b6, #ec4899); }
+
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 15px 30px;
+            color: #fff;
+            text-align: center;
+            z-index: 100;
+        }
+
+        #activity-log {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 15px;
+            color: #fff;
+            width: 250px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .activity-item {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        #title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+            z-index: 100;
+        }
+
+        .interaction-prompt {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 20px;
+            color: #fff;
+            font-size: 18px;
+            z-index: 200;
+            display: none;
+            text-align: center;
+        }
+
+        .interaction-prompt.show {
+            display: block;
+        }
+
+        .interaction-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .interaction-btn {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 10px 20px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .interaction-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.5);
+        }
+
+        #emoji-particle {
+            position: fixed;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 150;
+            animation: float-up 2s ease-out forwards;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(2);
+            }
+        }
+
+        .tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 250;
+            display: none;
+        }
+
+        .tooltip.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="title">🦞 MONKO JUNGLE SIMULATOR 🌴</div>
+    
+    <div id="hud">
+        <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #ffd700;">MONKO STATUS</div>
+        <div class="stat-bar">
+            <span class="stat-icon">🍌</span>
+            <span class="stat-label">Hunger</span>
+            <div class="bar-container">
+                <div class="bar-fill hunger-bar" id="hunger-bar"></div>
+            </div>
+        </div>
+        <div class="stat-bar">
+            <span class="stat-icon">⚡</span>
+            <span class="stat-label">Energy</span>
+            <div class="bar-container">
+                <div class="bar-fill energy-bar" id="energy-bar"></div>
+            </div>
+        </div>
+        <div class="stat-bar">
+            <span class="stat-icon">💖</span>
+            <span class="stat-label">Happiness</span>
+            <div class="bar-container">
+                <div class="bar-fill happiness-bar" id="happiness-bar"></div>
+            </div>
+        </div>
+        <div style="margin-top: 15px; padding-top: 10px; border-top: 2px solid rgba(255, 255, 255, 0.3);">
+            <div style="font-size: 14px;">🦞 Bananas: <span id="banana-count" style="color: #ffd700; font-weight: bold;">0</span></div>
+            <div style="font-size: 14px; margin-top: 5px;">🌴 Location: <span id="location" style="color: #98d8e8;">Jungle</span></div>
+        </div>
+    </div>
+
+    <div id="controls">
+        <div style="font-weight: bold; margin-bottom: 5px;">CONTROLS</div>
+        <div style="font-size: 14px;">
+            Click anywhere to move 🐒<br>
+            Click objects to interact 🍌🌳💧
+        </div>
+    </div>
+
+    <div id="activity-log">
+        <div style="font-weight: bold; margin-bottom: 10px; color: #ffd700;">ACTIVITY LOG</div>
+        <div id="log-content"></div>
+    </div>
+
+    <div id="interaction-prompt" class="interaction-prompt">
+        <div id="interaction-text"></div>
+        <div class="interaction-buttons" id="interaction-buttons"></div>
+    </div>
+
+    <div id="tooltip" class="tooltip"></div>
+
+    <canvas id="game-canvas"></canvas>
+
+    <script src="simulator.js"></script>
+</body>
+</html>
